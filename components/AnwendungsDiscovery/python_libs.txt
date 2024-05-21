@@ -1,0 +1,17 @@
+# FastAPI framework, high performance, easy to learn, fast to code, ready for production
+fastapi>=0.109.2
+
+# The lightning-fast ASGI server
+uvicorn>=0.27.1
+
+# simple powerful testing with Python
+pytest>=8.0.0
+
+# Thin-wrapper around the mock package for easier use with pytest
+pytest-mock>=3.12.0
+
+# An implementation of JSON Schema validation for Python
+jsonschema>=4.21.1
+
+# A streaming multipart parser for Python
+python-multipart>=0.0.9

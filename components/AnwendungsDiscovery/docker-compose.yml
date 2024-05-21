@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  discovery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: AnwendungsDiscovery
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "8081:8081"
+    networks:
+      - my-network
+
+networks:
+  my-network:

@@ -1,0 +1,12 @@
+{
+  "Anbieter": "Akquinet",
+  "Anwendung": "KIM",
+  "Version": "1.5",
+  "Services": {
+    "mailserver_pop3_uri": "pop3://ms.akquinet.de:110",
+    "mailserver_smtp_uri": "smtp://ms.akquinet.de:25",
+    "accmgnt_url": "https://www.accmgnt.akquinet.de:8080",
+    "KAS_uri": "https://www.kas.akquinet.de:8080",
+    "LDAP_uri": "ldap://www.vzd.arvato.de/"
+  }
+}

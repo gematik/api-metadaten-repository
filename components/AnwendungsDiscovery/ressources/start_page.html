@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anwendungs-Discovery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h3 {
+            color: #555;
+        }
+        p {
+            margin: 5px 0;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0; /* Increase margin to create more space */
+        }
+        #submit-button {
+            width: 15%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #upload-button {
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px; /* Add margin-top for spacing */
+        }
+        #upload-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #ff0000; /* Red color for the message */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Willkommen im Anwendungs-Discovery</h1>
+        <h3>Bitte wählen Sie aus, ob Sie ein Provider oder ein Consumer sind:</h3>
+        <select id="role">
+            <option value="">-- Bitte auswählen --</option>
+            <option value="provider">Provider</option>
+            <option value="consumer">Consumer</option>
+        </select>
+        <div id="provider-section" style="display: none;">
+            <h3>Bitte wählen Sie eine TI-Anwendung:</h3>
+            <select id="application">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="KIM">KIM</option>
+            </select>
+            <h3 id="version-label" style="display: none;">Bitte wählen Sie eine Version:</h3>
+            <select id="version" style="display: none;">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="KIM 1.0">KIM 1.0</option>
+                <option value="KIM 1.5">KIM 1.5</option>
+                <option value="KIM 2.0">KIM 2.0</option>
+            </select>
+            <h3>Bitte wählen Sie einen Anbieter:</h3>
+            <select id="provider" onchange="showUploadButton()">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="gematik">gematik</option>
+            </select>
+            <input type="file" id="file-upload" style="display: none;">
+            <div>
+                <button id="upload-button">Datei hochladen</button>
+                <span id="file-name" style="margin-left: 10px;"></span> <!-- Display file name here -->
+            </div>
+            <p id="upload-info" style="display: none;">Achtung: Aktuell werden nur JSON-Datein unterstützt!</p>
+        </div>
+        <div id="consumer-section" style="display: none;">
+            <h3>Bitte wählen Sie eine TI-Anwendung:</h3>
+            <select id="consumer-application" onchange="showConsumerVersionDropdown()">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="KIM">KIM</option>
+            </select>
+            <h3 id="consumer-version-label" style="display: none;">Bitte wählen Sie eine Version:</h3>
+            <select id="consumer-version" style="display: none;">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="KIM 1.0">KIM 1.0</option>
+                <option value="KIM 1.5">KIM 1.5</option>
+                <option value="KIM 2.0">KIM 2.0</option>
+            </select>
+            <h3>Bitte wählen Sie einen Anbieter:</h3>
+            <select id="consumer-provider">
+                <option value="">-- Bitte auswählen --</option>
+                <option value="gematik">gematik</option>
+            </select>
+        </div>
+        <button id="submit-button" onclick="submitSelection()">Submit</button>
+        <textarea id="schema-textarea" rows="10" cols="98" style="display: none; margin-top: 20px; background-color: #ffffcc;"></textarea>
+
+    </div>
+    <script>
+        function submitSelection() {
+            var role = document.getElementById("role").value;
+            if (role === "provider") {
+                console.log('Datei erfolgreich hochgeladen.');
+                alert('Datei erfolgreich hochgeladen.');
+                window.location.href = '/'; // Zurück zur Startseite navigieren
+            }
+            else if (role === "consumer") {
+
+                var consumerApplication = document.getElementById("consumer-application").value;
+                var consumerVersion = document.getElementById("consumer-version").value;
+                var consumerProvider = document.getElementById("consumer-provider").value;
+
+                if (consumerApplication === "KIM") {
+                    fetchSchema(consumerApplication, consumerVersion, consumerProvider);
+                } else {
+                    document.getElementById("schema-textarea").style.display = "none";
+                }
+            } else {
+                alert('Bitte wählen Sie eine Rolle aus.');
+            }
+        }
+
+        // @router.get("/services/{application}/{version}/{provider}")
+        function fetchSchema(application, version, provider) {
+            fetch(`/services/${application}/${version}/${provider}`, {
+                method: 'GET',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Schema retrieval failed.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                var schemaTextArea = document.getElementById("schema-textarea");
+                schemaTextArea.value = JSON.stringify(data, null, 2);
+
+                schemaTextArea.style.display = "block";
+            })
+            .catch(error => {
+                console.error('Error retrieving schema:', error);
+                alert('Error retrieving schema: ' + error.message);
+            });
+        }
+
+        function showUploadButton() {
+            var provider = document.getElementById("provider").value;
+            if (provider) {
+                document.getElementById("upload-button").style.display = "block";
+                document.getElementById("upload-info").style.display = "block";
+            }
+        }
+
+        function showConsumerVersionDropdown() {
+            var application = document.getElementById("consumer-application").value;
+            var versionLabel = document.getElementById("consumer-version-label");
+            var versionDropdown = document.getElementById("consumer-version");
+            if (application === "KIM") {
+                versionLabel.style.display = "block";
+                versionDropdown.style.display = "block";
+            } else {
+                versionLabel.style.display = "none";
+                versionDropdown.style.display = "none";
+            }
+        }
+
+        document.getElementById("upload-button").addEventListener("click", function() {
+            var fileInput = document.getElementById('file-upload');
+            fileInput.click();
+        });
+
+        // Valedierung der Datei + Upload
+        // @router.post("/upload/{provider}/{application}/{version}")
+        document.getElementById('file-upload').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var version = document.getElementById("version").value;
+            var application = document.getElementById("application").value;
+            var provider = document.getElementById("provider").value;
+
+            if (file) {
+                if (!validateFileFormat(file.name)) {
+                    alert('Es werden aktuell nur JSON-Files unterstützt.');
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload/' + provider + '/' + application + '/' + version,{
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File validation failed.'); // Wirft einen Fehler, wenn die Antwort nicht OK ist
+                    }
+                    return response.json(); // Um die JSON-Antwort zu parsen
+                })
+                .then(data => {
+                    if (data.filename && data.provider) {
+                        console.log('Upload successful:', data);
+                        document.getElementById("file-name").innerText = "Datei hochgeladen: " + data.filename;
+                        alert('validation successful'); // Fehlermeldung anzeigen
+                        // Erfolgsmeldung anzeigen
+                    } else {
+                        console.error('Upload failed:', data.error);
+                        alert('Upload failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during upload:', error); // Hier wird der Fehler abgefangen
+                    alert('Error during upload: ' + error.message); // Fehlermeldung anzeigen
+                });
+            }
+        });
+
+        function validateFileFormat(fileName) {
+            var allowedFormats = ['json'];
+            var fileExtension = fileName.split('.').pop().toLowerCase();
+            return allowedFormats.includes(fileExtension);
+        }
+
+        // Abhängig von der Rolle werden die Elemente angezeigt
+        document.getElementById("role").addEventListener("change", function() {
+            var role = document.getElementById("role").value;
+            var providerSection = document.getElementById("provider-section");
+            var consumerSection = document.getElementById("consumer-section");
+            if (role === "provider") {
+                providerSection.style.display = "block";
+                consumerSection.style.display = "none";
+            } else if (role === "consumer") {
+                providerSection.style.display = "none";
+                consumerSection.style.display = "block";
+            } else {
+                providerSection.style.display = "none";
+                consumerSection.style.display = "none";
+            }
+        });
+
+        // KIM: Zeigt die verfügbaren Versionen an
+        document.getElementById("application").addEventListener("change", function() {
+            var application = document.getElementById("application").value;
+            var versionLabel = document.getElementById("version-label");
+            var versionDropdown = document.getElementById("version");
+            if (application === "KIM") {
+                versionLabel.style.display = "block";
+                versionDropdown.style.display = "block";
+            } else {
+                versionLabel.style.display = "none";
+                versionDropdown.style.display = "none";
+            }
+        });
+
+        // Setzt alle Dropdownas auf "Bitte auswählen" wenn die Seite geladen wird
+        window.onload = function() {
+            document.getElementById("role").value = "";
+            document.getElementById("application").value = "";
+            document.getElementById("version").value = "";
+            document.getElementById("provider").value = "";
+            document.getElementById("consumer-application").value = "";
+            document.getElementById("consumer-provider").value = "";
+            document.getElementById("upload-button").style.display = "none";
+            document.getElementById("upload-info").style.display = "none";
+        };
+    </script>
+</body>
+</html>

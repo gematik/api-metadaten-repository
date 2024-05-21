@@ -1,0 +1,89 @@
+:doctype: book
+:toc: macro
+:toclevels: 5
+:toc-title: Inhaltsverzeichnis
+:numbered:
+
+toc::[]
+
+= Anwendungs-Discovery 
+
+== Beschreibung
+Die Anwendungs-Discovery ist eine RESTful API, die es Anbietern ermöglicht, Informationen über ihre technischen Integrationen bereitzustellen und Clients den Zugriff auf diese Informationen zu ermöglichen. Die API unterstützt das Hochladen von Dateien gemäß eines definierten JSON-Schemas sowie das Abrufen von Informtionen für bestimmte Anwendungen.
+
+== Starten der Anwendungs-Discovery
+Der Service wird standardmäßig unter http://localhost:8081 gestartet.
+
+=== Lokal
+Die Anwendungs-Discovery wurde in Python entwickelt. Bevor der Service lokal ausgeführt werden kann, muss sichergestellt werden ,dass die erforderlichen Bibliotheken installiert sind. Diese sind in der `python_libs.txt` hinterlegt und werden bereits bei der Ausführung des folgenden Bash-Scriptes geprüft:
+
+[source,sh]
+----
+./run_AD.sh
+----
+
+=== Docker
+Im Repository wird ein Dockerfile sowie ein docker-compose file bereitgestellt. Somit ist es möglich, die Anwendungs Discovery in einem Docker-Container auszuführen.
+
+[source,sh]
+----
+docker-compose up -d --build
+----
+
+== Frontend
+Die API wird von einem einfachen Frontend begleitet, das unter `start_page.html` im Ordner `/ressources` verfügbar ist. Dieses Frontend ermöglicht es Benutzern, die API zu nutzen, um Dateien hochzuladen und Informationen abzurufen.
+
+== Verwendung
+Greifen Sie über Ihren Webbrowser auf den folgenden Endpukt zu: +
+* `127.0.0.1:8081/`
+
+1) Laden Sie anschließend als `Provider` ein valides JSON-File hoch, welches dem JSON-Schema entspricht (`/schemas/{application}`)
+
+2) Anschließend können Sie als `Consumer` das JSON-Objekt betrachten
+
+== Endpunkte
+
+=== GET /
+
+    Beschreibung: Begrüßungsseite der Anwendung.
+    Methode: GET
+    URL: /
+    Rückgabewert: HTML-Begrüßungsseite
+    Beispiel: http://127.0.0.1:8081/
+
+=== POST /upload/{provider}/{application}/{version}
+
+    Beschreibung: Hochladen einer Datei gemäß eines definierten JSON-Schemas.
+    Methode: POST
+    URL: /upload/{provider}/{application}/{version}
+    Parameter:
+        {provider}: Der Name des Anbieters.
+        {application}: Der Name der Anwendung.
+        {version}: Die Versionsnummer der Anwendung.
+    Anforderungskörper: Die hochzuladende Datei im JSON-Format.
+    Rückgabewert: -
+
+=== GET /services/{application}/{version}/{provider}
+
+    Beschreibung: Abrufen von Informationen für eine bestimmte Anwendung.
+    Methode: GET
+    URL: /services/{application}/{version}/{provider}
+    Parameter:
+        {application}: Der Name der Anwendung.
+        {version}: Die Versionsnummer der Anwendung.
+        {provider}: Der Name des Anbieters.
+    Rückgabewert: JSON-Objekt mit den angeforderten Informationen zur Anwendung.
+    Beispiel: http://127.0.0.1:8081/services/KIM/KIM 1.5/gematik
+
+=== GET /schemas/{application}
+    Beschreibung: Abrufen des JSON-Schemas für eine bestimmte Anwendung.
+    Methode: GET
+    URL: /schemas/{application}
+    Parameter:
+        {application}: Der Name der Anwendung.
+    Rückgabewert: JSON-Objekt mit dem angeforderten JSON-Schema.
+    Beispiel: http://127.0.0.1:8081/schemas/KIM
+
+== JSON-Schema
+Das JSON-Schema, das für die Validierung der hochgeladenen Dateien verwendet wird, ist im Ordner `/schemas/{application}` als schema.json verfügbar.
+

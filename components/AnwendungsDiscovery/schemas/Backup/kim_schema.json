@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "Anbieter": {
+      "type": "string"
+    },
+    "Anwendung": {
+      "type": "string"
+    },
+    "Version": {
+      "type": "string"
+    },
+    "Services": {
+      "type": "object",
+      "properties": {
+        "mailserver_pop3_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "mailserver_smtp_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "accmgnt_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "KAS_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "LDAP_uri": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "mailserver_pop3_uri",
+        "mailserver_smtp_uri",
+        "accmgnt_url",
+        "KAS_uri",
+        "LDAP_uri"
+      ]
+    }
+  },
+  "required": ["Anbieter", "Anwendung", "Version", "Services"]
+}
+
