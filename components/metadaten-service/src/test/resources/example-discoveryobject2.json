@@ -1,0 +1,10 @@
+{
+  "discoveryDetails": {
+    "detail1" : "value_1",
+    "detail2" : "value2",
+    "detail3" : "3",
+    "sensationaldetail" : "value4"
+  },
+  "name": "MyDynamicDiscoveryObj_Test01",
+  "uuid": "00000000-0000-1180-0000-000007200011"
+}

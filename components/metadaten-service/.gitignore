@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
+# VS Code
+.vscode
+.factorypath
+
+# OSX
+.DS_Store

@@ -1,0 +1,11 @@
+{
+  "Anbieter": "gematik",
+  "Anwendung": "KIM",
+  "Version": "1.5",
+  "Services": {
+    "mailserver_pop3_uri": "pop3://172.17.0.1:8110",
+    "mailserver_smtp_uri": "smtp://172.17.0.1:8025",
+    "accmgnt_url": "http://127.0.0.1:8080",
+    "KAS_uri": "http://127.0.0.1:8088"
+  }
+}

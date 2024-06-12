@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "masterData": {
+      "type": "object",
+      "properties": {
+        "anbieter": {
+          "type": "string"
+        },
+        "appName": {
+          "type": "string"
+        },
+        "appVersion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "anbieter",
+        "appName",
+        "appVersion"
+      ]
+    },
+    "metaData": {
+      "type": "object",
+      "properties": {
+        "discoveryObject": {
+          "type": "object",
+          "properties": {
+            "discoveryDetails": {
+              "type": "object",
+              "properties": {
+                "discoveryDetail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "discoveryDetail"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "uuid": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "discoveryDetails",
+            "name",
+            "uuid"
+          ]
+        }
+      },
+      "required": [
+        "discoveryObject"
+      ]
+    }
+  },
+  "required": [
+    "masterData",
+    "metaData"
+  ]
+}
