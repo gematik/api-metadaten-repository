@@ -17,25 +17,25 @@ public class AdminResource {
 
     @Inject MDService mdService;
 
-    @POST
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Path("/validationscheme")
-    public Response addSchema(@QueryParam("anbieter") @NonNull String anbieter,
-                              @QueryParam("appname") @NonNull String appName,
-                              @QueryParam("appversion") @NonNull String appversion,
-                              String schemaStr) {
-        MasterData masterData = new MasterData(anbieter, appName, appversion);
-        SchemaStore schemaStore = new SchemaStore();
-
-        try {
-            schemaStore.loadSchemaJson(schemaStr);
-            mdService.getAdminDataList().clear();
-            mdService.getAdminDataList().add(new AdminData(masterData, schemaStr));
-        } catch (GenerationException e) {
-            throw new RuntimeException(e);
-        }
-        return Response.ok().build();
-    }
+//    @POST
+//    @Consumes(MediaType.TEXT_PLAIN)
+//    @Path("/validationscheme")
+//    public Response addSchema(@QueryParam("anbieter") @NonNull String anbieter,
+//                              @QueryParam("appname") @NonNull String appName,
+//                              @QueryParam("appversion") @NonNull String appversion,
+//                              String schemaStr) {
+//        MasterData masterData = new MasterData(anbieter, appName, appversion);
+//        SchemaStore schemaStore = new SchemaStore();
+//
+//        try {
+//            schemaStore.loadSchemaJson(schemaStr);
+//            mdService.getAdminDataList().clear();
+//            mdService.getAdminDataList().add(new AdminData(masterData, schemaStr));
+//        } catch (GenerationException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return Response.ok().build();
+//    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -1,6 +1,10 @@
 package de.gematik.mdrepo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.*;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,20 +13,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Entity
 public class DiscoveryObject {
-    //private ConfigurationParameter configurationParameter;
-    //private Policy policy;
-    //private Service service;
-//    private String name = "MyDiscoveryObj";
-    @Getter @Setter private String name;
-//    private UUID uuid = new UUID(128, 16);
-    @Getter @Setter private UUID uuid;
-//    @Getter @Setter private String name;
-    //private UUID uuid;
-//    private DiscoveryDetails discoveryDetails = new DiscoveryDetails();
-//    @Getter @Setter private DiscoveryDetails discoveryDetails;
-    private Map<String, Object> discoveryDetails = new LinkedHashMap<String, Object>();
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @Schema(readOnly = true)
+    private UUID id;
 
-    //private DiscoveryRepresentation discoveryRepresentation;
+    private String name;
 
 }
