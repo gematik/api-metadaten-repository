@@ -7,6 +7,7 @@
 - Metadatenbindung an bestimmte Anbieter-Stammdaten
 - Schemavalidierung
 - Bestimmte Endpoints der OpenAPI-Definition werden abgebildet
+- OpenAPI-Definition wird auf Basis der vonhandenen Resources dynamisch gerendert
 - statisches Infomodel
 - Nutzungsbeispiel
 
