@@ -29,7 +29,6 @@ public class AppDataCollectorResource {
         return mdService.getAppDataList();
     }
 
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addDiscoveryObject(@QueryParam("anbieter") @NonNull String anbieter,
