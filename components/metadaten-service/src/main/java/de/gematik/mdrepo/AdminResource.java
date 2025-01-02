@@ -11,6 +11,7 @@ import net.jimblackler.jsonschemafriend.SchemaStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/admin/app")
 public class AdminResource {
@@ -19,26 +20,31 @@ public class AdminResource {
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    @Path("/validationscheme")
-    public Response addSchema(@QueryParam("anbieter") @NonNull String anbieter,
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/addvalidationscheme")
+    public String addSchema(@QueryParam("anbieter") @NonNull String anbieter,
                               @QueryParam("appname") @NonNull String appName,
-                              @QueryParam("appversion") @NonNull String appversion,
+                              @QueryParam("appversion") @NonNull String appVersion,
                               String schemaStr) {
-        MasterData masterData = new MasterData(anbieter, appName, appversion);
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        String hashKey = "AdminData-AppData-Bundle:" + anbieter + ":" + appName + ":" + appVersion + ":" + uuid;
+        String field = "admindata";
+        MasterData masterData = new MasterData(anbieter, appName, appVersion);
         SchemaStore schemaStore = new SchemaStore();
 
         try {
             schemaStore.loadSchemaJson(schemaStr);
-            mdService.getAdminDataList().clear();
-            mdService.getAdminDataList().add(new AdminData(masterData, schemaStr));
+            mdService.getAdminDataHashCommands().hset(hashKey, field, new AdminData(masterData, schemaStr));
         } catch (GenerationException e) {
             throw new RuntimeException(e);
         }
-        return Response.ok().build();
+        //return Response.ok().build();
+        return uuid;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/listall")
     public List<AdminData> provideInfo(@QueryParam("anbieter") @NonNull String anbieter,
                                  @QueryParam("appname") @NonNull String appName,
                                  @QueryParam("appversion") @NonNull String appversion) {

@@ -3,6 +3,8 @@ package de.gematik.mdrepo;
 import de.gematik.mdrepo.model.AdminData;
 import de.gematik.mdrepo.model.AppData;
 import io.quarkus.redis.client.RedisClientName;
+import io.quarkus.redis.datasource.hash.HashCommands;
+import io.quarkus.redis.datasource.list.ListCommands;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.Data;
 import jakarta.inject.Inject;
@@ -14,7 +16,6 @@ import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
 
-
 @ApplicationScoped
 @Data
 public class MDService {
@@ -25,26 +26,24 @@ public class MDService {
     //@Inject @RedisClientName("redis-local-dev") ReactiveRedisDataSource reactiveDS;
 
     private final ValueCommands<String, AppData> appDataCommands;
+    private final ListCommands<String, AppData> appDataListCommands;
+    private final HashCommands<String, String, AppData> appDataHashCommands;
+
     private final ValueCommands<String, AdminData> adminDataCommands;
+    private final HashCommands<String, String, AdminData> adminDataHashCommands;
 
-    public MDService(@RedisClientName("redis-local-dev") RedisDataSource ds) {
+    private final KeyCommands<String> keyCommands;
+
+    //public MDService(@RedisClientName("redis-local-dev") RedisDataSource ds) {
+    public MDService(RedisDataSource ds) {
         appDataCommands = ds.value(AppData.class);
+        appDataListCommands = ds.list(AppData.class);
+        appDataHashCommands = ds.hash(AppData.class);
+
         adminDataCommands = ds.value(AdminData.class);
+        adminDataHashCommands = ds.hash(AdminData.class);
+
+        keyCommands = ds.key();
     }
 
-    public AppData get(String key) {
-        return appDataCommands.get(key);
-    }
-
-    public AdminData getAdminData(String key) {
-        return adminDataCommands.get(key);
-    }
-
-    public void set(String key, AppData appData) {
-        appDataCommands.set(key, appData);
-    }
-
-    public void set(String key, AdminData adminData) {
-        adminDataCommands.set(key, adminData);
-    }
 }
