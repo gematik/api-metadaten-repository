@@ -28,21 +28,16 @@ public class MDService {
     private final ValueCommands<String, AppData> appDataCommands;
     private final ListCommands<String, AppData> appDataListCommands;
     private final HashCommands<String, String, AppData> appDataHashCommands;
-
     private final ValueCommands<String, AdminData> adminDataCommands;
     private final HashCommands<String, String, AdminData> adminDataHashCommands;
-
     private final KeyCommands<String> keyCommands;
 
-    //public MDService(@RedisClientName("redis-local-dev") RedisDataSource ds) {
-    public MDService(RedisDataSource ds) {
+    public MDService(@RedisClientName("redis-local-dev") RedisDataSource ds) {
         appDataCommands = ds.value(AppData.class);
         appDataListCommands = ds.list(AppData.class);
         appDataHashCommands = ds.hash(AppData.class);
-
         adminDataCommands = ds.value(AdminData.class);
         adminDataHashCommands = ds.hash(AdminData.class);
-
         keyCommands = ds.key();
     }
 

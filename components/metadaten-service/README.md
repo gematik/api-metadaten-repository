@@ -10,9 +10,11 @@
 - OpenAPI-Definition wird auf Basis der vonhandenen Resources dynamisch gerendert
 - statisches Infomodel
 - Nutzungsbeispiel
+- Persistierung (redis)
+- n Discovery Objects pro Stammdatensatz, jedes mit eigenem Schema möglich
+ 
 
 ## Feature-Backlog
-- Persistierung (bisher Datenhaltung nur flüchtig zur Laufzeit)
 - n Discovery Objects pro Stammdatensatz
 - sauberes Exception-Handling
 - vollständige Abbildung der OpenAPI-Definition
@@ -23,6 +25,11 @@
 
 
 ## Webanwendung laufen lassen im dev mode
+
+```sh
+# redis mit snapshots
+docker run -v /docker/host/dir:/data -p 6379:6379 --name some-redis -d redis redis-server --save 60 1 --loglevel warning
+```
 
 ```sh
 ./gradlew quarkusDev
