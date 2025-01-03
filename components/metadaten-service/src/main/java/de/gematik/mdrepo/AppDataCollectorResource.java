@@ -11,28 +11,17 @@ import jakarta.ws.rs.core.Response;
 import lombok.NonNull;
 import net.jimblackler.jsonschemafriend.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 
 @Path("/mdsammler")
 public class AppDataCollectorResource {
 
     @Inject MDService mdService;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/listall")
-    public List<AppData> provideInfo(@QueryParam("anbieter") String anbieter,
-                               @QueryParam("appname") String appName,
-                               @QueryParam("appversion") String appVersion) {
-        return mdService.getAppDataList();
-    }
-
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addDiscoveryObject(@QueryParam("anbieter") @NonNull String anbieter,
+    public Response addDiscoveryObjectOld(@QueryParam("anbieter") @NonNull String anbieter,
                                        @QueryParam("appname") @NonNull String appName,
                                        @QueryParam("appversion") @NonNull String appVersion,
                                        @NonNull @NotNull AppData appData) {
@@ -67,6 +56,55 @@ public class AppDataCollectorResource {
         mdService.getAppDataList().add(appData);
         return Response.ok().build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/add")
+    public Response addDiscoveryObject(@QueryParam("anbieter") @NonNull String anbieter,
+                                       @QueryParam("appname") @NonNull String appName,
+                                       @QueryParam("appversion") @NonNull String appVersion,
+                                       @NonNull @NotNull AppData appData) {
+        String multiKey = "AppDataList:" + anbieter + ":" + appName + ":" + appVersion;
+        AppData ad = appData;
+        mdService.getAppDataListCommands().rpush(multiKey, appData);
+        return Response.ok().build();
+    }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addvalidate")
+    public Response addValidatedBundle(@QueryParam("anbieter") @NonNull String anbieter,
+                                       @QueryParam("appname") @NonNull String appName,
+                                       @QueryParam("appversion") @NonNull String appVersion,
+                                       @QueryParam("schema-id") String schemaId,
+                                       @NonNull @NotNull AppData appData) {
+        String hashKey = "AdminData-AppData-Bundle:" + anbieter + ":" + appName + ":" + appVersion;
+        hashKey = schemaId.length() > 0 ? hashKey + ":" + schemaId : hashKey;
+
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        String appDataField = "appdata:" + uuid;
+        String matchSchema = "admindata";
+
+        AdminData adminData = mdService.getAdminDataHashCommands().hget(hashKey, matchSchema);
+        String schemaStr = adminData.getSchemaStr();
+        SchemaStore schemaStore = new SchemaStore();
+        Schema schema = null;
+
+        try {
+        schema = schemaStore.loadSchemaJson(schemaStr);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Validator validator = new Validator();
+        validator.validateJson(schema, objectMapper.writeValueAsString(appData));
+        } catch (ValidationException | GenerationException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        mdService.getAppDataHashCommands().hset(hashKey, appDataField, appData);
+
+    return Response.ok().build();
+    }
+
 
     //TODO Update bestehendes Obj (PUT)
 
