@@ -11,51 +11,13 @@ import jakarta.ws.rs.core.Response;
 import lombok.NonNull;
 import net.jimblackler.jsonschemafriend.*;
 
-import java.util.ListIterator;
-import java.util.UUID;
+import java.util.*;
 
 @Path("/mdsammler")
 public class AppDataCollectorResource {
 
     @Inject MDService mdService;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response addDiscoveryObjectOld(@QueryParam("anbieter") @NonNull String anbieter,
-                                       @QueryParam("appname") @NonNull String appName,
-                                       @QueryParam("appversion") @NonNull String appVersion,
-                                       @NonNull @NotNull AppData appData) {
-
-        for (ListIterator adl = mdService.getAppDataList().listIterator(); adl.hasNext();) {
-            AppData a = (AppData)adl.next();
-            if (a.getMetaData().getDiscoveryObject().getName().equals(appData.getMetaData().getDiscoveryObject().getName()) &&
-                a.getMetaData().getDiscoveryObject().getUuid().equals((appData.getMetaData().getDiscoveryObject().getUuid()))) {
-                return Response.notModified().build();
-            }
-        }
-
-        for (ListIterator adminDataList = mdService.getAdminDataList().listIterator(); adminDataList.hasNext();) {
-            AdminData adminData = (AdminData)adminDataList.next();
-            if (adminData.getMasterData().getAnbieter().equals(anbieter) &&
-                adminData.getMasterData().getAppName().equals(appName) &&
-                adminData.getMasterData().getAppVersion().equals(appVersion)) {
-
-                String schemaStr = adminData.getSchemaStr();
-                SchemaStore schemaStore = new SchemaStore();
-                Schema schema = null;
-                try {
-                    schema = schemaStore.loadSchemaJson(schemaStr);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    Validator validator = new Validator();
-                    validator.validateJson(schema, objectMapper.writeValueAsString(appData));
-                } catch (ValidationException | GenerationException | JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        mdService.getAppDataList().add(appData);
-        return Response.ok().build();
-    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -70,42 +32,157 @@ public class AppDataCollectorResource {
         return Response.ok().build();
     }
 
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/addvalidate")
+    @Path("/add/new-validated")
     public Response addValidatedBundle(@QueryParam("anbieter") @NonNull String anbieter,
                                        @QueryParam("appname") @NonNull String appName,
                                        @QueryParam("appversion") @NonNull String appVersion,
                                        @QueryParam("schema-id") String schemaId,
                                        @NonNull @NotNull AppData appData) {
+
         String hashKey = "AdminData-AppData-Bundle:" + anbieter + ":" + appName + ":" + appVersion;
-        hashKey = schemaId.length() > 0 ? hashKey + ":" + schemaId : hashKey;
+        hashKey = (schemaId != null && schemaId.length() > 0) ? hashKey + ":" + schemaId : hashKey;
 
-        String uuid = UUID.randomUUID().toString().replace("-","");
-        String appDataField = "appdata:" + uuid;
         String matchSchema = "admindata";
-
         AdminData adminData = mdService.getAdminDataHashCommands().hget(hashKey, matchSchema);
+
+        if (adminData == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("AdminData not found for key: " + hashKey).build();
+        }
+
         String schemaStr = adminData.getSchemaStr();
         SchemaStore schemaStore = new SchemaStore();
         Schema schema = null;
 
         try {
-        schema = schemaStore.loadSchemaJson(schemaStr);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Validator validator = new Validator();
-        validator.validateJson(schema, objectMapper.writeValueAsString(appData));
+            schema = schemaStore.loadSchemaJson(schemaStr);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Validator validator = new Validator();
+            validator.validateJson(schema, objectMapper.writeValueAsString(appData));
         } catch (ValidationException | GenerationException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
+        String newUuid = appData.getMetaData().getDiscoveryObject().getUuid().toString();
+        Map<String, AppData> existingEntries = mdService.getAppDataHashCommands().hgetall(hashKey);
+
+        if (existingEntries != null) {
+            for (AppData storedData : existingEntries.values()) {
+                if (storedData != null &&
+                        storedData.getMetaData() != null &&
+                        storedData.getMetaData().getDiscoveryObject() != null) {
+                    String storedUuid = storedData.getMetaData().getDiscoveryObject().getUuid().toString();
+                    if (newUuid.equals(storedUuid)) {
+                        return Response.status(Response.Status.CONFLICT)
+                                .entity("Discovery object with UUID " + newUuid + " already exists in this bundle.")
+                                .build();
+                    }
+                }
+            }
+        }
+
+        String redisFieldUuid = UUID.randomUUID().toString().replace("-","");
+        String appDataField = "appdata:" + redisFieldUuid;
         mdService.getAppDataHashCommands().hset(hashKey, appDataField, appData);
 
-    return Response.ok().build();
+        return Response.ok("Discovery object with UUID " + newUuid + " added to this bundle.").build();
     }
 
 
-    //TODO Update bestehendes Obj (PUT)
+    @POST
+    @Path("/remove/allbundleobjects")
+    public Response removeValidatedBundle(@QueryParam("anbieter") @NonNull String anbieter,
+                                          @QueryParam("appname") @NonNull String appName,
+                                          @QueryParam("appversion") @NonNull String appVersion,
+                                          @QueryParam("schema-id") @NonNull String schemaId) {
+        String hashKey = "AdminData-AppData-Bundle:" + anbieter + ":" + appName + ":" + appVersion;
+        hashKey = (schemaId != null && !schemaId.isEmpty()) ? hashKey + ":" + schemaId : hashKey;
+        Map<String, AppData> allEntries = mdService.getAppDataHashCommands().hgetall(hashKey);
+
+        if (allEntries == null || allEntries.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No data found for that schema.").build();
+        }
+
+        List<String> fieldsToDeleteList = new ArrayList<>();
+
+        for (String fieldKey : allEntries.keySet()) {
+            if (fieldKey != null && fieldKey.startsWith("appdata:")) {
+                fieldsToDeleteList.add(fieldKey);
+            }
+        }
+
+        if (!fieldsToDeleteList.isEmpty()) {
+            String[] fieldsToDeleteArray = fieldsToDeleteList.toArray(new String[0]);
+            mdService.getAppDataHashCommands().hdel(hashKey, fieldsToDeleteArray);
+            return Response.ok(fieldsToDeleteList.size() + " discovery objects removed.").build();
+        } else {
+            return Response.ok("No discovery objects found to remove from that schema.").build();
+        }
+    }
+
+    @POST
+    @Path("/remove/bundleobject")
+    public Response removeValidatedBundle(@QueryParam("anbieter") @NonNull String anbieter,
+                                          @QueryParam("appname") @NonNull String appName,
+                                          @QueryParam("appversion") @NonNull String appVersion,
+                                          @QueryParam("schema-id") String schemaId,
+                                          @QueryParam("object-uuid") String targetUuid,
+                                          @QueryParam("object-name") String targetName) {
+
+        boolean hasUuidFilter = (targetUuid != null && !targetUuid.isEmpty());
+        boolean hasNameFilter = (targetName != null && !targetName.isEmpty());
+
+        if (!hasUuidFilter && !hasNameFilter) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Please provide at least 'object-uuid' or 'object-name' parameter to delete specific discovery objects.")
+                    .build();
+        }
+
+        String hashKey = "AdminData-AppData-Bundle:" + anbieter + ":" + appName + ":" + appVersion;
+        hashKey = (schemaId != null && !schemaId.isEmpty()) ? hashKey + ":" + schemaId : hashKey;
+        Map<String, AppData> allEntries = mdService.getAppDataHashCommands().hgetall(hashKey);
+
+        if (allEntries == null || allEntries.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No data found for that schema.").build();
+        }
+
+        List<String> fieldsToDeleteList = new ArrayList<>();
+
+        for (Map.Entry<String, AppData> entry : allEntries.entrySet()) {
+            String fieldKey = entry.getKey();
+            AppData data = entry.getValue();
+
+            if (fieldKey != null && fieldKey.startsWith("appdata:") && data != null) {
+                if (data.getMetaData() != null && data.getMetaData().getDiscoveryObject() != null) {
+                    String storedUuid = data.getMetaData().getDiscoveryObject().getUuid().toString();
+                    String storedName = data.getMetaData().getDiscoveryObject().getName();
+                    boolean match = false;
+
+                    if (hasUuidFilter && targetUuid.equals(storedUuid)) {
+                        match = true;
+                    }
+
+                    if (hasNameFilter && targetName.equals(storedName)) {
+                        match = true;
+                    }
+
+                    if (match) {
+                        fieldsToDeleteList.add(fieldKey);
+                    }
+                }
+            }
+        }
+
+        if (!fieldsToDeleteList.isEmpty()) {
+            String[] fieldsToDeleteArray = fieldsToDeleteList.toArray(new String[0]);
+            mdService.getAppDataHashCommands().hdel(hashKey, fieldsToDeleteArray);
+
+            return Response.ok(fieldsToDeleteList.size() + " discovery objects removed matching criteria.").build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No discovery objects found matching the provided UUID or Name.").build();
+        }
+    }
 
 }
