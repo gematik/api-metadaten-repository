@@ -1,0 +1,85 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "masterData" : {
+      "type" : "object",
+      "properties" : {
+        "anbieter" : {
+          "type" : "string"
+        },
+        "appName" : {
+          "type" : "string"
+        },
+        "appVersion" : {
+          "type" : "string"
+        }
+      },
+      "additionalProperties" : false,
+      "required" : [ "anbieter", "appName", "appVersion" ]
+    },
+    "metaData" : {
+      "type" : "object",
+      "properties" : {
+        "discoveryObject" : {
+          "type" : "object",
+          "properties" : {
+            "discoveryDetails" : {
+              "type" : "object",
+              "properties" : {
+                "detail1" : {
+                  "type" : "string"
+                },
+                "sensationaldetail" : {
+                  "type" : "string"
+                },
+                "executionTime" : {
+                  "type" : "integer"
+                },
+                "isVerified" : {
+                  "type" : "boolean"
+                },
+                "featureFlags" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                },
+                "endpoints" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "url" : {
+                        "type" : "string"
+                      },
+                      "method" : {
+                        "type" : "string"
+                      }
+                    },
+                    "additionalProperties" : false,
+                    "required" : [ "url", "method" ]
+                  }
+                }
+              },
+              "additionalProperties" : false,
+              "required" : [ "detail1", "sensationaldetail", "executionTime", "isVerified", "featureFlags", "endpoints" ]
+            },
+            "name" : {
+              "type" : "string"
+            },
+            "uuid" : {
+              "type" : "string"
+            }
+          },
+          "additionalProperties" : false,
+          "required" : [ "discoveryDetails", "name", "uuid" ]
+        }
+      },
+      "additionalProperties" : false,
+      "required" : [ "discoveryObject" ]
+    }
+  },
+  "additionalProperties" : false,
+  "required" : [ "masterData", "metaData" ]
+}

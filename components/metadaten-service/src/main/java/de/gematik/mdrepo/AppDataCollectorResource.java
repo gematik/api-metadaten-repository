@@ -21,7 +21,7 @@ public class AppDataCollectorResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/add")
+    @Path("/add/new-unvalidated")
     public Response addDiscoveryObject(@QueryParam("anbieter") @NonNull String anbieter,
                                        @QueryParam("appname") @NonNull String appName,
                                        @QueryParam("appversion") @NonNull String appVersion,

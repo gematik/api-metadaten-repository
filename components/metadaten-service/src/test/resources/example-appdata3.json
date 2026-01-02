@@ -1,0 +1,35 @@
+{
+  "masterData": {
+    "anbieter": "gem",
+    "appName": "TIM",
+    "appVersion": "3.1"
+  },
+  "metaData": {
+    "discoveryObject": {
+      "discoveryDetails": {
+        "detail1": "value_1",
+        "detail2": "value2",
+        "detail3": "3",
+        "sensationaldetail": "value4",
+        "executionTime": 150,
+        "isVerified": true,
+        "featureFlags": [
+          "logging_enabled",
+          "beta_user"
+        ],
+        "endpoints": [
+          {
+            "url": "/api/v1/status",
+            "method": "GET"
+          },
+          {
+            "url": "/api/v1/update",
+            "method": "POST"
+          }
+        ]
+      },
+      "name": "MyDiscoveryObj_Test_03",
+      "uuid": "33333333-0000-1180-0000-000000000333"
+    }
+  }
+}

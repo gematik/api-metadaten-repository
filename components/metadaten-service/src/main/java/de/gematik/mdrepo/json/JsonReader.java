@@ -33,7 +33,6 @@ public class JsonReader {
             validator.validateJson(schema, jsonStr);
         } catch (SchemaException e) {
             e.printStackTrace();
-            //throw new RuntimeException(e);
             return false;
         }
         return true;
@@ -42,8 +41,9 @@ public class JsonReader {
     public static void main(String[] args) {
         try {
             JsonReader reader = new JsonReader();
-            Pojo pojo = reader.readJson2Pojo("src/test/resources/example1.json");
-            boolean isMatching = reader.isMatchingSchema("src/test/resources/schema1.json", "src/test/resources/example1.json");
+            Pojo pojo = reader.readJson2Pojo("src/test/resources/example-appdata4.json");
+            System.out.println(pojo.getElements().toString());
+            boolean isMatching = reader.isMatchingSchema("src/test/resources/schema-appdata4.json", "src/test/resources/example-appdata4.json");
             System.out.println("validSchemaForThisJson: " + isMatching);
 
         } catch (IOException e) {
