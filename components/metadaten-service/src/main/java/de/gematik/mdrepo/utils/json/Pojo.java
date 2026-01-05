@@ -1,4 +1,4 @@
-package de.gematik.mdrepo.json;
+package de.gematik.mdrepo.utils.json;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

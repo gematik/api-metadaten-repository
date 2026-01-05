@@ -1,4 +1,4 @@
-package de.gematik.mdrepo.json;
+package de.gematik.mdrepo.utils.json;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 

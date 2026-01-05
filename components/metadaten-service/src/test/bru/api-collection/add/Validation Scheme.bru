@@ -1,0 +1,33 @@
+meta {
+  name: Validation Scheme
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/admin/app/add/validationscheme?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}
+  body: file
+  auth: none
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+}
+
+headers {
+  Content-Type: text/plain
+}
+
+body:text {
+  <Inhalt von schema-appdata2.json hier einfügen>
+}
+
+body:file {
+  file: @file(data/in/schema-appdata2.json) @contentType(text/plain)
+}
+
+assert {
+  res.status: eq 401
+}

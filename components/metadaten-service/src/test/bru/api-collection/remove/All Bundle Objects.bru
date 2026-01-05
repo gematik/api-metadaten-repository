@@ -1,0 +1,26 @@
+meta {
+  name: All Bundle Objects
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/mdsammler/remove/allbundleobjects?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}&schema-id={{dynamic_schema_id}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+  schema-id: {{dynamic_schema_id}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{dynamic_jwt}}
+}

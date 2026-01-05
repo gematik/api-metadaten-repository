@@ -3,6 +3,7 @@ package de.gematik.mdrepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.gematik.mdrepo.model.*;
+import io.quarkus.security.Authenticated;
 import io.smallrye.common.constraint.NotNull;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -14,6 +15,7 @@ import net.jimblackler.jsonschemafriend.*;
 import java.util.*;
 
 @Path("/mdsammler")
+@Authenticated
 public class AppDataCollectorResource {
 
     @Inject MDService mdService;

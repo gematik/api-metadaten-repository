@@ -1,0 +1,17 @@
+meta {
+  name: All Validated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/mdauskunft/all/validated?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}
+  body: none
+  auth: none
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+}

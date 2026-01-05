@@ -1,0 +1,22 @@
+meta {
+  name: Specific Validated
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/mdauskunft/specific/validated?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}&schema-id={{dynamic_schema_id}}
+  body: none
+  auth: none
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+  schema-id: {{dynamic_schema_id}}
+}
+
+headers {
+  Accept: application/json
+}

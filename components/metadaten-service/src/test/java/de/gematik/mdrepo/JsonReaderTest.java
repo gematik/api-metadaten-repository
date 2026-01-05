@@ -2,8 +2,8 @@ package de.gematik.mdrepo;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import de.gematik.mdrepo.json.JsonReader;
-import de.gematik.mdrepo.json.Pojo;
+import de.gematik.mdrepo.utils.json.JsonReader;
+import de.gematik.mdrepo.utils.json.Pojo;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;

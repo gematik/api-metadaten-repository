@@ -1,0 +1,25 @@
+meta {
+  name: Discovery Object Unvalidated
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/mdsammler/add/new-unvalidated?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}
+  body: file
+  auth: none
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:file {
+  file: @file(data/in/example1.json) @contentType(application/json; charset=utf-8)
+}

@@ -1,6 +1,7 @@
 package de.gematik.mdrepo;
 
 import de.gematik.mdrepo.model.*;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -9,11 +10,14 @@ import lombok.NonNull;
 import net.jimblackler.jsonschemafriend.GenerationException;
 import net.jimblackler.jsonschemafriend.SchemaStore;
 import java.util.UUID;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/admin/app")
+@Authenticated
 public class AdminResource {
 
     @Inject MDService mdService;
+    @Inject JsonWebToken jwt;
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)

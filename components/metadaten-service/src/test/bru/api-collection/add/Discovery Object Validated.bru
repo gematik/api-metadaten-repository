@@ -1,0 +1,40 @@
+meta {
+  name: Discovery Object Validated
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/mdsammler/add/new-validated?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}&schema-id={{dynamic_schema_id}}
+  body: file
+  auth: bearer
+}
+
+params:query {
+  anbieter: {{anbieter}}
+  appname: {{appname}}
+  appversion: {{appversion}}
+  schema-id: {{dynamic_schema_id}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{dynamic_jwt}}
+}
+
+body:file {
+  file: @file(data/in/example-appdata4.json) @contentType(application/json; charset=utf-8)
+  ~file: @file(data/in/example-appdata2-02.json) @contentType(application/json; charset=utf-8)
+  ~file: @file(data/in/example-appdata2.json) @contentType(application/json; charset=utf-8)
+  ~file: @file(data/in/example-appdata3.json) @contentType(application/json; charset=utf-8)
+  ~file: @file(data/in/example-appdata1.json) @contentType(application/json; charset=utf-8)
+}
+
+assert {
+  res.status: neq 500
+  res.status: eq 200
+  res.status: neq 409
+}
