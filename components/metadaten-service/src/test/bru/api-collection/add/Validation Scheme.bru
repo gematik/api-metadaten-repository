@@ -20,14 +20,12 @@ headers {
   Content-Type: text/plain
 }
 
-body:text {
-  <Inhalt von schema-appdata2.json hier einfügen>
-}
-
 body:file {
-  file: @file(data/in/schema-appdata2.json) @contentType(text/plain)
+  file: @file(data/in/schema-appdata4.json) @contentType(text/plain)
+  ~file: @file(data/in/schema-appdata2.json) @contentType(text/plain)
 }
 
 assert {
   res.status: eq 401
+  res.status: neq 200
 }
