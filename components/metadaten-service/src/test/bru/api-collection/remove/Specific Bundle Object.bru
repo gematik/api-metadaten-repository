@@ -2,12 +2,15 @@ meta {
   name: Specific Bundle Object
   type: http
   seq: 2
+  tags: [
+    authenticated
+  ]
 }
 
 post {
-  url: {{baseUrl}}/mdsammler/remove/bundleobject?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}&schema-id={{dynamic_schema_id}}&object-id={{object-id}}
+  url: {{baseUrl}}/mdsammler/remove/bundleobject?anbieter={{anbieter}}&appname={{appname}}&appversion={{appversion}}&schema-id={{dynamic_schema_id}}&object-uuid={{object-uuid}}
   body: none
-  auth: none
+  auth: bearer
 }
 
 params:query {
@@ -15,9 +18,13 @@ params:query {
   appname: {{appname}}
   appversion: {{appversion}}
   schema-id: {{dynamic_schema_id}}
-  object-id: {{object-id}}
+  object-uuid: {{object-uuid}}
 }
 
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{dynamic_jwt}}
 }

@@ -2,6 +2,9 @@ meta {
   name: Validation Scheme -auth
   type: http
   seq: 2
+  tags: [
+    authenticated
+  ]
 }
 
 post {
@@ -25,8 +28,8 @@ auth:bearer {
 }
 
 body:file {
-  file: @file(data/in/schema-appdata1.json) @contentType(text/plain)
-  ~file: @file(data/in/schema-appdata4.json) @contentType(text/plain)
+  file: @file(data/in/schema-appdata4.json) @contentType(text/plain)
+  ~file: @file(data/in/schema-appdata1.json) @contentType(text/plain)
   ~file: @file(data/in/schema-appdata2.json) @contentType(text/plain)
   ~file: @file(data/in/schema-appdata3.json) @contentType(text/plain)
 }
