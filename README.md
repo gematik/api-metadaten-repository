@@ -51,7 +51,7 @@ n/a yet
 ## License
 Copyright 2024-2026 gematik GmbH
 
-European Union Public Licence, Version 1.1 (EUPL)
+European Union Public Licence, Version 1.2 (EUPL)
 
 See [LICENSE](./LICENSE) for license information.
 
