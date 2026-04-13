@@ -12,12 +12,12 @@
 - Nutzungsbeispiel
 - Persistierung (redis)
 - n Discovery Objects pro Stammdatensatz, jedes mit eigenem Schema möglich
- 
+- vollständige Abbildung der OpenAPI-Definition
+- Schreiben (Schemata, Discovery-Objekte) nur nach Authentifizierung mit gültiger Autorisierung
+- API-Collection (.bru Dateien) als Minimalclient und zum Testen
 
 ## Feature-Backlog
-- n Discovery Objects pro Stammdatensatz
 - sauberes Exception-Handling
-- vollständige Abbildung der OpenAPI-Definition
 - weitere Nutzungsbeispiele
 - Redirect zu Anbieter-Endpoint
 - dynamisches Infomodel auf OWL-Basis (optional)
@@ -27,7 +27,7 @@
 ## Webanwendung laufen lassen im dev mode
 
 ```sh
-# redis mit snapshots
+# redis mit snapshot-Funktion
 docker run -v /docker/host/dir:/data -p 6379:6379 --name some-redis -d redis redis-server --save 60 1 --loglevel warning
 ```
 
