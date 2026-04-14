@@ -51,9 +51,11 @@ n/a yet
 ## License
 Copyright 2024-2026 gematik GmbH
 
-European Union Public Licence, Version 1.2 (EUPL)
+EUROPEAN UNION PUBLIC LICENCE v. 1.2
 
-See [LICENSE](./LICENSE) for license information.
+EUPL © the European Union 2007, 2016
+
+See the [LICENSE](./LICENSE) for the specific language governing permissions and limitations under the License
 
 ## Additional Notes and Disclaimer from gematik GmbH
 1. Copyright notice: Each published work result is accompanied by an explicit statement of the license conditions for use. These are regularly typical conditions in connection with open source or free software. Programs described/provided/linked here are free software, unless otherwise stated.
